@@ -86,11 +86,15 @@ class BaseDetector(object):
                         theme=self.opt.debugger_theme)
     start_time = time.time()
     pre_processed = False
+    image_path = ''
     if isinstance(image_or_path_or_tensor, np.ndarray):
       image = image_or_path_or_tensor
+      print("tensor")
     elif type(image_or_path_or_tensor) == type (''): 
       image = cv2.imread(image_or_path_or_tensor)
+      image_path = image_or_path_or_tensor
     else:
+      print("else")
       image = image_or_path_or_tensor['image'][0].numpy()
       pre_processed_images = image_or_path_or_tensor
       pre_processed = True
@@ -137,7 +141,10 @@ class BaseDetector(object):
     tot_time += end_time - start_time
 
     if self.opt.debug >= 1:
-      self.show_results(debugger, image, results)
+      # self.show_results(debugger, image, results)
+      image_path = image_path.split("/")[-1]
+      print("image_path: "+ image_path)
+      self.save_results(debugger, image, results, output, image_path)
     
     return {'results': results, 'tot': tot_time, 'load': load_time,
             'pre': pre_time, 'net': net_time, 'dec': dec_time,

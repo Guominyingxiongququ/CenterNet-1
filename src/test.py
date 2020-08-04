@@ -101,10 +101,11 @@ def test(opt):
     img_id = dataset.images[ind]
     img_info = dataset.coco.loadImgs(ids=[img_id])[0]
     img_path = os.path.join(dataset.img_dir, img_info['file_name'])
-
+    print("???????"+img_path)
     if opt.task == 'ddd':
       ret = detector.run(img_path, img_info['calib'])
     else:
+      print("begin run: "+ img_path)
       ret = detector.run(img_path)
     
     results[img_id] = ret['results']

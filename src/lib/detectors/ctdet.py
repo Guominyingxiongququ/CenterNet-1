@@ -94,3 +94,13 @@ class CtdetDetector(BaseDetector):
         if bbox[4] > self.opt.vis_thresh:
           debugger.add_coco_bbox(bbox[:4], j - 1, bbox[4], img_id='ctdet')
     debugger.show_all_imgs(pause=self.pause)
+
+  def save_results(self, debugger, image, results, output, path):
+    debugger.add_img(image, img_id=path)
+    for j in range(1, self.num_classes + 1):
+      for bbox in results[j]:
+        if bbox[4] > self.opt.vis_thresh:
+          debugger.add_coco_bbox(bbox[:4], j - 1, bbox[4], img_id=path)
+    pred = debugger.gen_colormap(output['hm'][0].detach().cpu().numpy())
+    debugger.add_blend_img(image, pred, 'pred_hm_'+path)
+    debugger.save_all_imgs()
