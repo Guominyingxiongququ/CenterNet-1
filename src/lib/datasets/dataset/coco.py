@@ -7,6 +7,8 @@ from pycocotools.cocoeval import COCOeval
 import numpy as np
 import json
 import os
+import pdb
+import cv2
 
 import torch.utils.data as data
 
@@ -127,3 +129,52 @@ class COCO(data.Dataset):
     coco_eval.evaluate()
     coco_eval.accumulate()
     coco_eval.summarize()
+
+  def run_eval_debug(self, results, save_dir):
+    self.save_results(results, save_dir)
+    save_path = "cache/fail/"
+    coco_dets = self.coco.loadRes('{}/results.json'.format(save_dir))
+    coco_eval = COCOeval(self.coco, coco_dets, "bbox")
+    p=coco_eval.params
+    p.imgIds = list(np.unique(p.imgIds))
+    p.maxDets = sorted(p.maxDets)
+    coco_eval.params=p
+    coco_eval._prepare()
+    catIds = [-1]
+    computeIoU = coco_eval.computeIoU
+    coco_eval.ious = {(imgId, catId): coco_eval.computeIoU(imgId, catId) \
+                for imgId in p.imgIds
+                for catId in catIds}
+    maxDet = p.maxDets[-1]
+    for imgId in p.imgIds:
+      img_path = "/home/user/home/user/Xinyuan/work/CenterNet-1/data/coco/val2017/"
+      fullImgId = str(imgId).zfill(11)
+      img_path = os.path.join(img_path, fullImgId+'.jpg')
+      img = cv2.imread(img_path)
+      for catId in catIds:
+        # for i, areaRng in enumerate(p.areaRng):
+        areaRng = p.areaRng[0]
+        print("areaRng: "+areaRng)
+        result = coco_eval.getImageFailCase(imgId, catId, areaRng, maxDet)
+        gtIds = result['gtIds']
+        dtIds = result['dtIds']
+        gtFailIds = gtIds[result['gtfail'][0]]
+        dtFailIds = dtIds[result['dtfail'][0]]
+        gts = [_ for cId in p.catIds for _ in coco_eval._gts[imgId,cId]]
+        dts = [_ for cId in p.catIds for _ in coco_eval._dts[imgId,cId]]
+        gts = [g['bbox'] for g in gts]
+        dts = [d['bbox'] for d in dts]
+        pdb.set_trace()
+        c = [255, 0, 0]
+        for dt in dts:
+          bbox = np.array(dt, dtype=np.int32)
+          cv2.rectangle(
+            img, (bbox[0], bbox[1]), (bbox[2], bbox[3]), c, 2)
+        c = [0, 255, 0]
+        for gt in gts:
+          bbox = np.array(gt, dtype=np.int32)
+          cv2.rectangle(
+            img, (bbox[0], bbox[1]), (bbox[2], bbox[3]), c, 2)
+    # saveImage
+    save_path = os.path.join(save_path, fullImgId+"_"+str(i))
+    cv2.imwrite(save_path, img)

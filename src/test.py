@@ -78,6 +78,7 @@ def prefetch_test(opt):
     bar.next()
   bar.finish()
   dataset.run_eval(results, opt.save_dir)
+  # dataset.run_eval_debug(results, opt.save_dir)
 
 def test(opt):
   os.environ['CUDA_VISIBLE_DEVICES'] = opt.gpus_str
@@ -101,7 +102,6 @@ def test(opt):
     img_id = dataset.images[ind]
     img_info = dataset.coco.loadImgs(ids=[img_id])[0]
     img_path = os.path.join(dataset.img_dir, img_info['file_name'])
-    print("???????"+img_path)
     if opt.task == 'ddd':
       ret = detector.run(img_path, img_info['calib'])
     else:
@@ -117,6 +117,7 @@ def test(opt):
       Bar.suffix = Bar.suffix + '|{} {:.3f} '.format(t, avg_time_stats[t].avg)
     bar.next()
   bar.finish()
+  #dataset.run_eval_debug(results, opt.save_dir)
   dataset.run_eval(results, opt.save_dir)
 
 if __name__ == '__main__':

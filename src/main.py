@@ -49,10 +49,10 @@ def main(opt):
       pin_memory=True
   )
 
-  if opt.test:
-    _, preds = trainer.val(0, val_loader)
-    val_loader.dataset.run_eval(preds, opt.save_dir)
-    return
+  # if opt.test:
+  _, preds = trainer.val(0, val_loader)
+  val_loader.dataset.run_eval(preds, opt.save_dir)
+  # return
 
   train_loader = torch.utils.data.DataLoader(
       Dataset(opt, 'train'), 
