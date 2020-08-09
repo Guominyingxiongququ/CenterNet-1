@@ -50,8 +50,8 @@ def main(opt):
   )
 
   # if opt.test:
-  _, preds = trainer.val(0, val_loader)
-  val_loader.dataset.run_eval(preds, opt.save_dir)
+  # _, preds = trainer.val(0, val_loader)
+  # val_loader.dataset.run_eval(preds, opt.save_dir)
   # return
 
   train_loader = torch.utils.data.DataLoader(

@@ -115,7 +115,7 @@ class CtdetTrainer(BaseTrainer):
                                  dets_gt[i, k, 4], img_id='out_gt')
 
       if opt.debug == 4:
-        debugger.save_all_imgs(opt.debug_dir, prefix='{}'.format(iter_id))
+        debugger.save_all_imgs('cache/train_debug', prefix='{}'.format(iter_id))
       else:
         debugger.show_all_imgs(pause=True)
 

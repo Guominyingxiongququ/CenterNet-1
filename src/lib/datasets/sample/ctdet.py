@@ -114,7 +114,16 @@ class CTDetDataset(data.Dataset):
         ct = np.array(
           [(bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2], dtype=np.float32)
         ct_int = ct.astype(np.int32)
+        lt = np.array(
+          [bbox[0], bbox[1]], dtype=np.float32)
+        lt_int = lt.astype(np.int32)
+        rb = np.array(
+          [bbox[2], bbox[3]], dtype=np.float32)
+        rb_int = rb.astype(np.int32)
+
         draw_gaussian(hm[cls_id], ct_int, radius)
+        draw_gaussian(hm[cls_id], lt_int, radius)
+        draw_gaussian(hm[cls_id], rb_int, radius)
         wh[k] = 1. * w, 1. * h
         ind[k] = ct_int[1] * output_w + ct_int[0]
         reg[k] = ct - ct_int
